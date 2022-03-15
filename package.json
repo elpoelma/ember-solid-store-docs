@@ -69,6 +69,7 @@
     "edition": "octane"
   },
   "dependencies": {
+    "showdown-highlight": "^2.1.8",
     "uikit": "^3.11.1"
   }
 }

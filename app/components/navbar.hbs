@@ -3,9 +3,23 @@
 
         <ul class="uk-navbar-nav">
             <li><LinkTo @route="index">Home</LinkTo></li>
-            <li><LinkTo @route="page" @model={{"api"}}>API</LinkTo></li>
-            <li><LinkTo @route="page" @model={{"tutorial"}}>Tutorial</LinkTo></li>
+
         </ul>
 
+    </div>
+    <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav">
+            <li><LinkTo @route="page" @model={{"installation"}}>Installation</LinkTo></li>
+            <li>
+                <LinkTo @route="page" @model={{"tutorials"}}>Tutorials</LinkTo>
+                <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                        <li><LinkTo @route="page" @model={{"tutorials/books"}}>Books application</LinkTo></li>
+                        <li><LinkTo @route="page" @model={{"tutorials/profile"}}>Profile editor</LinkTo></li>
+                    </ul>
+                </div>
+            </li>
+            <li><LinkTo @route="page" @model={{"api"}}>API</LinkTo></li>
+        </ul>
     </div>
 </nav>

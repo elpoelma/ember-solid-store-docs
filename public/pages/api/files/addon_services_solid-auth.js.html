@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/services/solid-auth.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Ember.AuthService.html">Ember.AuthService</a></li>
+                                <li><a href="../classes/Ember.DataAdapter.html">Ember.DataAdapter</a></li>
+                                <li><a href="../classes/Ember.ForkingStore.html">Ember.ForkingStore</a></li>
+                                <li><a href="../classes/Ember.SemanticModel.html">Ember.SemanticModel</a></li>
+                                <li><a href="../classes/Ember.StoreService.html">Ember.StoreService</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/ember.html">ember</a></li>
+                                <li><a href="../modules/ember-extension-support.html">ember-extension-support</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: addon/services/solid-auth.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+import { inject as service } from &#x27;@ember/service&#x27;;
+import { tracked } from &#x27;@glimmer/tracking&#x27;;
+import Service from &#x27;@ember/service&#x27;;
+import {
+  fetch,
+  Session,
+  getClientAuthenticationWithDependencies,
+  onSessionRestore,
+  getDefaultSession,
+  login,
+  handleIncomingRedirect,
+} from &#x27;@inrupt/solid-client-authn-browser&#x27;;
+import rdflib from &#x27;ember-rdflib&#x27;;
+import { SOLID } from &#x27;../utils/namespaces&#x27;;
+import env from &#x27;ember-get-config&#x27;;
+
+const { sym } = rdflib;
+
+async function sessionPodBase(session) {
+  // TODO: detect pod base by traversing upward
+  const webId = session.info.webId;
+  if (webId) {
+    const url = new URL(webId);
+    return &#x60;${url.origin}/${url.pathname.split(&#x27;/&#x27;)[1]}&#x60;;
+  }
+}
+
+/**
+ *
+ * Ember service used to log-in with solid and fetch profile-info and type-indexes
+ *
+ * @class AuthService
+ *
+ * @property {Session} session A solid session
+ * @property {StoreService} store Rdf-store used to query data from solid
+ */
+export default class AuthService extends Service {
+  @tracked
+  session = null;
+
+  get isLoggedIn() {
+    const session = this.session;
+    return session?.info?.isLoggedIn;
+  }
+
+  @service(env.rdfStore.name)
+  store;
+
+  @service
+  router;
+
+  async restoreSession() {
+    if (this.session) return this.session;
+    else {
+      const session = new Session(
+        {
+          clientAuthentication: getClientAuthenticationWithDependencies({}),
+        },
+        &#x27;solid-store-session&#x27;
+      );
+
+      try {
+        const redirectPath = window.localStorage.getItem(
+          &#x27;solid-auth-redirect-path&#x27;
+        );
+        if (!redirectPath)
+          window.localStorage.setItem(
+            &#x27;solid-auth-redirect-path&#x27;,
+            window.location.href
+          );
+
+        const incomingRedirectResponse = await session.handleIncomingRedirect({
+          restorePreviousSession: true,
+          url: window.location.href,
+        });
+        console.log({ incomingRedirectResponse });
+        this.store.authSession = session;
+        this.store.podBase = await sessionPodBase(session);
+
+        window.localStorage.removeItem(&#x27;solid-auth-redirect-path&#x27;);
+        if (redirectPath) {
+          const url = new URL(redirectPath);
+          const recognized = this.router.recognize(
+            url.href.slice(url.origin.length)
+          );
+          this.router.replaceWith(
+            recognized.name,
+            Object.assign({}, recognized.params, {
+              queryParams: recognized.queryParams,
+            })
+          );
+        }
+      } catch (e) {
+        console.error(&#x60;Failed to log in: ${e}&#x60;);
+      }
+
+      this.session = session;
+      return this.session;
+    }
+  }
+
+  @service
+  router;
+
+  /**
+   *
+   * Logs in to a solid-pod with a given provider
+   *
+   * @param {String} identityProvider The solid-provider to login with
+   *
+   * @method ensureLogin
+   */
+  async ensureLogin({
+    identityProvider = null,
+    clientName = &#x27;RDFlib NOW!&#x27;,
+    redirectUrl = window.location.href,
+  } = {}) {
+    const session = await this.restoreSession();
+    const isLoggedIn = session.info?.isLoggedIn;
+
+    if (!isLoggedIn) {
+      if (identityProvider)
+        window.localStorage.setItem(
+          &#x27;solid-last-identity-provider&#x27;,
+          identityProvider
+        );
+      else
+        identityProvider = window.localStorage.getItem(
+          &#x27;solid-last-identity-provider&#x27;
+        );
+
+      if (!identityProvider)
+        this.router.transitionTo(&#x27;login&#x27;, {
+          queryParams: { from: redirectUrl },
+        });
+
+      window.localStorage.setItem(&#x27;solid-auth-redirect-path&#x27;, redirectUrl);
+
+      await session.login({
+        oidcIssuer: identityProvider,
+        redirectUrl,
+        clientName,
+      });
+
+      // this.session = session;
+      this.store.authSession = session;
+      this.store.podBase = await sessionPodBase(session);
+    }
+  }
+
+  /**
+   *
+   * Fetches profile-info and the private- and public type indexes
+   *
+   * @method ensureTypeIndex
+   */
+  async ensureTypeIndex() {
+    await this.store.load(this.webIdSym.doc());
+
+    const privateTypeIndex = this.privateTypeIndexLocation;
+    this.store.privateTypeIndex = privateTypeIndex;
+    await this.store.load(privateTypeIndex);
+
+    const publicTypeIndex = this.publicTypeIndexLocation;
+    this.store.publicTypeIndex = publicTypeIndex;
+    await this.store.load(publicTypeIndex);
+  }
+
+  get privateTypeIndexLocation() {
+    return (
+      this.store.any(
+        this.webIdSym,
+        SOLID(&#x27;privateTypeIndex&#x27;),
+        undefined,
+        this.webIdSym.doc()
+      ) || &#x60;#{this.podBase}/settings}/privateTypeIndex&#x60;
+    );
+  }
+
+  get publicTypeIndexLocation() {
+    return (
+      this.store.any(
+        this.webIdSym,
+        SOLID(&#x27;publicTypeIndex&#x27;),
+        undefined,
+        this.webIdSym.doc()
+      ) || &#x60;#{this.podBase}/settings}/publicTypeIndex&#x60;
+    );
+  }
+
+  get webId() {
+    return this.session?.info?.webId;
+  }
+
+  get webIdSym() {
+    return sym(this.webId);
+  }
+
+  get podBase() {
+    // TODO: detect pod base by traversing upward
+    if (this.webId) {
+      const url = new URL(this.webId);
+      return &#x60;${url.origin}/${url.pathname.split(&#x27;/&#x27;)[1]}&#x60;;
+    }
+  }
+}
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

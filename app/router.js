@@ -10,5 +10,4 @@ Router.map(function () {
   // this.route('index', { path: '/' });
   this.route('index', { path: '/' });
   this.route('page', { path: '/*md_path' });
-  this.route('hello');
 });

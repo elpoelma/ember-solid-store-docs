@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/models/semantic-model.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/Ember.AuthService.html">Ember.AuthService</a></li>
+                                <li><a href="../classes/Ember.DataAdapter.html">Ember.DataAdapter</a></li>
+                                <li><a href="../classes/Ember.ForkingStore.html">Ember.ForkingStore</a></li>
+                                <li><a href="../classes/Ember.SemanticModel.html">Ember.SemanticModel</a></li>
+                                <li><a href="../classes/Ember.StoreService.html">Ember.StoreService</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/ember.html">ember</a></li>
+                                <li><a href="../modules/ember-extension-support.html">ember-extension-support</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: addon/models/semantic-model.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+import { inject as service } from &#x27;@ember/service&#x27;;
+import { tracked } from &#x27;@glimmer/tracking&#x27;;
+import { get, set } from &#x27;@ember/object&#x27;;
+import { XSD, RDF } from &#x27;../utils/namespaces&#x27;;
+import rdflib from &#x27;ember-rdflib&#x27;;
+import env from &#x27;ember-get-config&#x27;;
+import { toNamespace, toNamedNode } from &#x27;../utils/namespaces&#x27;;
+import { v4 as uuid } from &#x27;uuid&#x27;;
+
+const { Statement } = rdflib;
+
+function sendAlert(message) {
+  console.error(...arguments); // TODO: these happen too much, fix in ForkingStore
+}
+
+/**
+ * returns the key for an attribute
+ * @param {string} attr The attribute
+ *
+ */
+function cacheKeyForAttr(attr) {
+  return &#x60;#cache__${attr}&#x60;;
+}
+
+/**
+ *
+ * Returns the graph linked to a type
+ *
+ * @param {String} type The given type
+ * @param {StoreService} store The rdf-store to used for querying triples
+ */
+function graphForType(type, store) {
+  return store.discoverDefaultGraphByType(store.classForModel(type));
+}
+
+/**
+ *
+ * Returns the graph where the given entity and property can be found
+ *
+ * @param {SemanticModel} entity The entity to find the graph for
+ * @param {String} propertyName The property name
+ */
+function graphForInstance(entity, propertyName) {
+  const entityGraph = entity.store.getGraphForType(entity.modelName);
+  const defaultGraph = entity.defaultGraph;
+
+  if (propertyName) {
+    const options = entity.attributeDefinitions[propertyName];
+    if (options.model &amp;&amp; options.inverse) {
+      return graphForType(options.model, entity.store);
+    } else {
+      return options.graph || entityGraph || defaultGraph;
+    }
+  } else {
+    return entityGraph || defaultGraph;
+  }
+}
+
+/**
+ *
+ * Updates an entity in the rdf-store
+ *
+ * @param {SemanticModel} entity The entity to update
+ * @param {[]} del The triples that need to be deleted
+ * @param {[]} ins The triples that need to be inserted
+ * @param {Object} options Entity options
+ */
+async function changeGraphTriples(entity, del, ins, options = {}) {
+  const validStatement = function (statement) {
+    return (
+      statement.subject.value !== null &amp;&amp;
+      statement.predicate.value !== null &amp;&amp;
+      statement.object.value !== null
+    );
+  };
+
+  del = del.filter(validStatement);
+  ins = ins.filter(validStatement);
+
+  const modelName = options.modelName || entity.modelName;
+  const store = options.store || entity.store;
+  if (modelName &amp;&amp; store.getAutosaveForType(modelName)) {
+    // push the data
+    await store.update(del, ins);
+  }
+
+  // store the data through the graph immediately
+  store.removeStatements(del);
+  store.addAll(ins);
+  
+}
+
+/**
+ *
+ * Returns the object value for a property of an entity
+ *
+ * @param {SemanticModel} target
+ * @param {String} propertyName
+ */
+function calculatePropertyValue(target, propertyName) {
+  let value;
+  const options = target.attributeDefinitions[propertyName];
+  const predicate = calculatePredicateForProperty(target, propertyName);
+  const graph = graphForInstance(target, propertyName);
+  const response = options.inverse
+    ? target.store.any(undefined, predicate, target.uri, graph)
+    : target.store.any(target.uri, predicate, undefined, graph);
+
+  const createRelatedRecordOptions = {
+    defaultGraph: options.propagateDefaultGraph
+      ? target.defaultGraph
+      : undefined,
+  };
+
+  switch (options.type) {
+    case &#x27;string&#x27;:
+      value = response &amp;&amp; response.value;
+      break;
+    case &#x27;integer&#x27;:
+      value = response &amp;&amp; parseInt(response.value);
+      break;
+    case &#x27;boolean&#x27;:
+      if (response === undefined) {
+        value = undefined;
+      } else {
+        const val = response.value;
+        value = val == &#x27;true&#x27; || val == &#x27;1&#x27;;
+      }
+      break;
+    case &#x27;term&#x27;:
+      value = response;
+      break;
+    case &#x27;dateTime&#x27;:
+      value = response &amp;&amp; new Date(response.value);
+      break;
+    case &#x27;belongsTo&#x27;:
+      value =
+        response &amp;&amp;
+        target.store.create(
+          options.model,
+          response,
+          createRelatedRecordOptions
+        );
+      break;
+    case &#x27;hasMany&#x27;:
+      var matches;
+      if (options.inverse) {
+        let sourceGraph = graphForType(options.model, target.store);
+        matches = target.store
+          .match(undefined, predicate, target.uri, sourceGraph)
+          .map(({ subject }) =&gt; subject);
+      } else {
+        matches = target.store
+          .match(target.uri, predicate, undefined, graph)
+          .map(({ object }) =&gt; object);
+      }
+
+      value = matches.map((uri) =&gt;
+        target.store.create(options.model, uri, createRelatedRecordOptions)
+      );
+      break;
+    case undefined:
+      value = response &amp;&amp; response.value;
+      break;
+  }
+
+  return value;
+}
+
+/**
+ *
+ * Updates the object-value for a property of an entity
+ *
+ * @param {SemanticModel} entity The entity to update
+ * @param {String} propertyName The property for which the value needs to be updated
+ */
+function updatePropertyValue(entity, propertyName) {
+  const cacheKey = cacheKeyForAttr(propertyName);
+  const newValue = calculatePropertyValue(entity, propertyName);
+  set(entity, cacheKey, newValue);
+}
+
+/**
+ *
+ * Return the predicate-uri of a property
+ *
+ * @param {SemanticModel} entity
+ * @param {String} propertyName
+ */
+function calculatePredicateForProperty(entity, propertyName) {
+  const options = entity.attributeDefinitions[propertyName];
+
+  const predicate =
+    (options.predicate &amp;&amp; toNamedNode(options.predicate)) ||
+    (options.ns &amp;&amp; toNamespace(options.ns)(propertyName)) ||
+    (entity.defaultNamespace &amp;&amp;
+      toNamespace(entity.defaultNamespace)(propertyName)) ||
+    (entity.constructor.namespace &amp;&amp;
+      entity.constructor.namespace(propertyName));
+  if (!predicate) throw &#x27;Could not calculate predicate&#x27;;
+  else return predicate;
+}
+
+/**
+ *
+ * Defines the setter and getter methods of a property
+ *
+ * @param {Object} options Options
+ */
+function property(options = {}) {
+  const predicateUri = options.predicate;
+
+  return function (self, propertyName, descriptor) {
+    self.attributes = self.attributes ? self.attributes : [];
+    self.attributes.push(propertyName);
+
+    const cacheKey = cacheKeyForAttr(propertyName);
+
+    self.attributeDefinitions = self.attributeDefinitions || {};
+    self.attributeDefinitions[propertyName] = Object.assign(
+      { cacheKey },
+      options
+    );
+
+    const calculatePredicate = function (entity) {
+      return calculatePredicateForProperty(entity, propertyName);
+    };
+
+    // Object.defineProperty( self, cacheKey, { enumerable: false, writable: true } );
+
+    // The current implementation does a get/set of the property
+    // &quot;cacheKey&quot; which will make this autotrack the cached property.
+    // As such we don&#x27;t need to manually call notifyPropertyChange.
+    // This does mean that we&#x27;re trying to be smart about reading the
+    // property so that we don&#x27;t accidentally overlap.
+
+    return {
+      enumerable: descriptor.enumerable,
+      configurable: descriptor.configurable,
+      get() {
+        if (this[cacheKey] !== undefined) {
+          return get(this, cacheKey); // register as a dependency
+        } else {
+          let value = calculatePropertyValue(this, propertyName);
+          set(this, cacheKey, value);
+          return get(this, cacheKey); // register as a dependency after setting
+        }
+      },
+      set(value) {
+        console.log(&quot;edit&quot;);
+        const predicate = calculatePredicate(this);
+        const graph = graphForInstance(this, propertyName);
+        const setRelationObject = function (object) {
+          const del = this.store.match(this.uri, predicate, undefined, graph);
+          const ins = object
+            ? [new Statement(this.uri, predicate, object, graph)]
+            : [];
+          console.log(&quot;add:&quot;, ins);
+          console.log(&quot;del:&quot;, del);
+          changeGraphTriples(this, del, ins)
+            .then((uri, message, response) =&gt;
+              console.log(&#x60;Success updating: ${message}&#x60;)
+            )
+            .catch((message, uri, response) =&gt;
+              sendAlert(message, { uri, message, response })
+            );
+        }.bind(this);
+
+        let object;
+        // TODO: add support for clearing values using undefined or
+        // null.
+        switch (options.type) {
+          case &#x27;string&#x27;:
+            setRelationObject(new rdflib.Literal(value));
+            break;
+          case &#x27;integer&#x27;:
+            setRelationObject(new rdflib.Literal(value, null, XSD(&#x27;decimal&#x27;)));
+            break;
+          case &#x27;boolean&#x27;:
+            setRelationObject(
+              new rdflib.literal(value ? &#x27;true&#x27; : &#x27;false&#x27;, null, XSD(&#x27;boolean&#x27;))
+            );
+            break;
+          case &#x27;dateTime&#x27;:
+            setRelationObject(
+              new rdflib.Literal(value.toUTCString(), null, XSD(&#x27;dateTime&#x27;))
+            );
+            break;
+          case &#x27;belongsTo&#x27;:
+            const oldValue = this[propertyName];
+            setRelationObject(value &amp;&amp; value.uri);
+            // invalidate inverse relation
+            if (options.inverseProperty) {
+              oldValue &amp;&amp;
+                updatePropertyValue(oldValue, options.inverseProperty);
+              value &amp;&amp; updatePropertyValue(value, options.inverseProperty);
+            }
+            break;
+          case &#x27;hasMany&#x27;:
+            value = value || []; // ensure the value is an array, even if
+            // null was supplied, this helps
+            // consumers further down the line
+            const newObjects = new Set(value);
+            const oldObjects = new Set(this[propertyName] || []);
+
+            let statementsToRemove = [];
+            let statementsToAdd = [];
+
+            if (!oldObjects) {
+              // remove all values if we haven&#x27;t cached them
+              // TODO: this case is not supported for now
+              console.error(
+                &#x27;Not removing matches in remote store which might exist&#x27;
+              );
+              this.store.removeMatches(this.uri, predicate, undefined, graph);
+            }
+
+            const objectsToAdd = new Set(newObjects);
+            oldObjects.forEach((o) =&gt; objectsToAdd.delete(o));
+            const objectsToRemove = new Set(oldObjects);
+            newObjects.forEach((o) =&gt; objectsToRemove.delete(o));
+
+            objectsToRemove.forEach((obj) =&gt; {
+              statementsToRemove.push(
+                new rdflib.Statement(this.uri, predicate, obj.uri, graph)
+              );
+            });
+            objectsToAdd.forEach((obj) =&gt; {
+              statementsToAdd.push(
+                new rdflib.Statement(this.uri, predicate, obj.uri, graph)
+              );
+            });
+
+            changeGraphTriples(this, statementsToRemove, statementsToAdd)
+              .then((uri, message, response) =&gt;
+                console.log(&#x60;Success updating: ${message}&#x60;)
+              )
+              .catch((message, uri, response) =&gt;
+                sendAlert(message, { uri, message, response })
+              ); // TODO: revert property update and recover
+
+            // invalidate inverse relations
+            [...objectsToAdd, ...objectsToRemove].forEach((obj) =&gt; {
+              if (options.inverseProperty)
+                updatePropertyValue(obj, options.inverseProperty);
+            });
+            break;
+          case &#x27;term&#x27;:
+            setRelationObject(object);
+            break;
+        }
+
+        set(this, cacheKey, value); // update dependent key
+
+        // update the change listeners, if any
+        for (let listener of this.changeListeners)
+          listener(this, { updatedField: propertyName, newValue: value });
+
+        return value;
+      },
+    };
+  };
+}
+
+/**
+ *
+ * Creates a string property
+ *
+ * @param {Object} options Options
+ */
+function string(options = {}) {
+  options.type = &#x27;string&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Creates an integer property
+ *
+ * @param {Object} options Options
+ */
+function integer(options = {}) {
+  options.type = &#x27;integer&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Creates a boolean property
+ *
+ * @param {Object} options Options
+ */
+function boolean(options = {}) {
+  options.type = &#x27;boolean&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Creates a datetime property
+ *
+ * @param {Object} options Options
+ */
+function dateTime(options = {}) {
+  options.type = &#x27;dateTime&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Creates a term property
+ *
+ * @param {Object} options Options
+ */
+function term(options = {}) {
+  options.type = &#x27;term&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Creates a hasMany property
+ *
+ * @param {Object} options Options
+ */
+function hasMany(options = {}) {
+  options.type = &#x27;hasMany&#x27;;
+  console.assert(options.model, &quot;hasMany requires &#x27;model&#x27; to be supplied&quot;);
+  return property(options);
+}
+
+/**
+ *
+ * Creates a belongs-to property
+ *
+ * @param {Object} options Options
+ */
+function belongsTo(options = {}) {
+  options.type = &#x27;belongsTo&#x27;;
+  return property(options);
+}
+
+/**
+ *
+ * Model class that represents entities (resources)
+ *
+ * @class SemanticModel
+ *
+ * @property {String} uri The entity Uri
+ * @property {String} defaultNameSpace Default namespace of the entity
+ * @property {String} modelName The model name
+ * @property {Set} changeListeners Called when the model changes
+ * @property {StoreService} store The rdf-store used for querying triples
+ */
+class SemanticModel {
+  @tracked uri;
+  defaultNamespace = null;
+
+  modelName = null;
+
+  changeListeners = new Set();
+
+  create() {
+    console.log(...arguments);
+  }
+
+  destroy() {
+    this.attributes.forEach((attr) =&gt; (this[attr] = null));
+
+    changeGraphTriples(
+      this,
+      [
+        new rdflib.Statement(
+          this.uri,
+          RDF(&#x27;type&#x27;),
+          this.rdfType,
+          graphForInstance(this)
+        ),
+      ],
+      []
+    )
+      .then((uri, message, response) =&gt;
+        console.log(&#x60;Success deleting: ${message}&#x60;)
+      )
+      .catch((message, uri, response) =&gt;
+        sendAlert(message, { uri, message, response })
+      );
+  }
+
+  // @service(env.rdfStore.name) store;
+
+  constructor(options = {}) {
+    const store = options.store;
+    this.store = store;
+
+    if (options.defaultGraph) this.defaultGraph = options.defaultGraph;
+    else if (this.constructor.defaultGraph)
+      this.defaultGraph = this.constructor.defaultGraph;
+    else if (this.constructor.solid) {
+      this.defaultGraph = options.store.discoverDefaultGraphByType(
+        this.constructor
+      );
+    }
+
+    if (options.defaultNamespace)
+      this.defaultNamespace = options.defaultNamespace;
+    if (options.modelName) {
+      this.modelName = options.modelName;
+    }
+
+    if (options.uri) {
+      this.uri = toNamedNode(options.uri);
+    } else {
+      this.uuid = this.uuid || options.uuid || uuid();
+      this.uri = toNamedNode(&#x60;${this.defaultGraph.value}#${this.uuid}&#x60;);
+    }
+
+    if (this.rdfType || this.constructor.rdfType) {
+      this.rdfType = this.rdfType || this.constructor.rdfType;
+    }
+
+    ensureResourceExists(this, options);
+
+    // import supplied properties
+    const nonPropertyOptions = [
+      &#x27;store&#x27;,
+      &#x27;defaultGraph&#x27;,
+      &#x27;defaultNamespace&#x27;,
+      &#x27;modelName&#x27;,
+      &#x27;uri&#x27;,
+    ];
+    Object.keys(options)
+      .filter((k) =&gt; !nonPropertyOptions.includes(k))
+      .forEach((k) =&gt; {
+        set(this, k, options[k]);
+      });
+  }
+
+  addChangeListener(listener) {
+    this.changeListeners.add(listener);
+  }
+  removeChangeListener(listener) {
+    this.changeListeners.delete(listener);
+  }
+}
+
+/**
+ *
+ * Checks if a given resource exists in the local store
+ *
+ * @param {SemanticModel} entity The given resource
+ * @param {Object} options Options
+ */
+function ensureResourceExists(entity, options) {
+  const rdfType = entity.rdfType;
+  // We cannot use graphForInstance here because the entity is not fully defined yet.
+  const targetGraph =
+    options.store.getGraphForType(entity.modelName) || entity.defaultGraph;
+
+  if (entity.uri &amp;&amp; rdfType) {
+    const matches = options.store
+      .match(entity.uri, undefined, rdfType, targetGraph)
+      .filter(({ predicate }) =&gt; predicate.value == RDF(&#x27;type&#x27;).value).length;
+
+    if (matches == 0)
+      changeGraphTriples(
+        this,
+        [],
+        [new rdflib.Statement(entity.uri, RDF(&#x27;type&#x27;), rdfType, targetGraph)],
+        options
+      )
+        .then((uri, message, response) =&gt;
+          console.log(&#x60;Success updating: ${message}&#x60;)
+        )
+        .catch((message, uri, response) =&gt;
+          sendAlert(message, { uri, message, response })
+        );
+  }
+}
+
+function rdfType(typeUri) {
+  return function (klass) {
+    klass.rdfType = typeUri;
+  };
+}
+
+function defaultGraph(graphUri) {
+  return function (klass) {
+    klass.defaultGraph = graphUri;
+  };
+}
+
+function autosave(bool = true) {
+  return function (klass) {
+    klass.autosave = bool;
+  };
+}
+
+function solid(options) {
+  return function (klass) {
+    klass.solid = options;
+
+    if (options.namespace || options.ns) {
+      klass.namespace = toNamespace(options.namespace || options.ns);
+    }
+
+    if (!options.type &amp;&amp; !klass.namespace) {
+      console.error(
+        &#x27;Must specify type for SOLID instances (eg: type: &quot;http://example.com/MyThing&quot;) or specify namespace (eg: namespace: &quot;http://example.com/&quot; or namespace: &quot;ext:&quot;)&#x27;
+      );
+    } else {
+      if (options.type) klass.rdfType = toNamedNode(options.type);
+      else klass.rdfType = klass.namespace(klass.name);
+    }
+  };
+}
+
+export default SemanticModel;
+export {
+  property,
+  string,
+  integer,
+  boolean,
+  dateTime,
+  hasMany,
+  belongsTo,
+  term,
+  solid,
+};
+export { rdfType, defaultGraph, autosave };
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

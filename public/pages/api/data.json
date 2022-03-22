@@ -1,0 +1,1491 @@
+{
+    "project": {},
+    "files": {
+        "addon/adapters/data-adapter.js": {
+            "name": "addon/adapters/data-adapter.js",
+            "modules": {
+                "ember-extension-support": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {
+                "Ember": 1
+            }
+        },
+        "addon/initializers/data-adapter.js": {
+            "name": "addon/initializers/data-adapter.js",
+            "modules": {},
+            "classes": {
+                "Ember.DataAdapter": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "Ember": 1
+            }
+        },
+        "addon/initializers/rdf-store.js": {
+            "name": "addon/initializers/rdf-store.js",
+            "modules": {},
+            "classes": {
+                "Ember.StoreService": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "addon/models/semantic-model.js": {
+            "name": "addon/models/semantic-model.js",
+            "modules": {},
+            "classes": {
+                "Ember.SemanticModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "addon/services/solid-auth.js": {
+            "name": "addon/services/solid-auth.js",
+            "modules": {},
+            "classes": {
+                "Ember.AuthService": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "addon/utils/forking-store.js": {
+            "name": "addon/utils/forking-store.js",
+            "modules": {},
+            "classes": {
+                "Ember.ForkingStore": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "addon/utils/namespaces.js": {
+            "name": "addon/utils/namespaces.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "ember": {
+            "name": "ember",
+            "submodules": {
+                "ember-extension-support": 1
+            },
+            "elements": {},
+            "classes": {
+                "Ember.DataAdapter": 1,
+                "Ember.StoreService": 1,
+                "Ember.SemanticModel": 1,
+                "Ember.AuthService": 1,
+                "Ember.ForkingStore": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "Ember": 1
+            },
+            "file": "addon/utils/forking-store.js",
+            "line": 76
+        },
+        "ember-extension-support": {
+            "name": "ember-extension-support",
+            "submodules": {},
+            "elements": {},
+            "classes": {
+                "Ember.DataAdapter": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {
+                "Ember": 1
+            },
+            "module": "ember",
+            "namespace": "",
+            "file": "addon/initializers/data-adapter.js",
+            "line": 17,
+            "description": "The `DataAdapter` helps a data persistence library\ninterface with tools that debug Ember such\nas the [Ember Extension](https://github.com/tildeio/ember-extension)\nfor Chrome and Firefox.\nThis class will be extended by a persistence library\nwhich will override some of the methods with\nlibrary-specific code.\nThe methods likely to be overridden are:\n* X `getFilters`\n* V `detect`\n* V `columnsForType`\n* V `getModelTypes`\n* V `getRecords`\n* V `getRecordColumnValues`\n* X `getRecordKeywords`\n* X `getRecordFilterValues`\n* X `getRecordColor`\n* X `observeRecord`\nThe adapter will need to be registered\nin the application's container as `dataAdapter:main`\nExample:\n```javascript\nApplication.initializer({\n  name: \"data-adapter\",\n  initialize: function(container, application) {\n    application.register('data-adapter:main', DS.DataAdapter);\n  }\n});\n```"
+        }
+    },
+    "classes": {
+        "Ember.DataAdapter": {
+            "name": "Ember.DataAdapter",
+            "shortname": "Ember.DataAdapter",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember",
+            "file": "addon/initializers/data-adapter.js",
+            "line": 17,
+            "description": "The `DataAdapter` helps a data persistence library\ninterface with tools that debug Ember such\nas the [Ember Extension](https://github.com/tildeio/ember-extension)\nfor Chrome and Firefox.\nThis class will be extended by a persistence library\nwhich will override some of the methods with\nlibrary-specific code.\nThe methods likely to be overridden are:\n* X `getFilters`\n* V `detect`\n* V `columnsForType`\n* V `getModelTypes`\n* V `getRecords`\n* V `getRecordColumnValues`\n* X `getRecordKeywords`\n* X `getRecordFilterValues`\n* X `getRecordColor`\n* X `observeRecord`\nThe adapter will need to be registered\nin the application's container as `dataAdapter:main`\nExample:\n```javascript\nApplication.initializer({\n  name: \"data-adapter\",\n  initialize: function(container, application) {\n    application.register('data-adapter:main', DS.DataAdapter);\n  }\n});\n```",
+            "extends": "EmberObject"
+        },
+        "Ember.StoreService": {
+            "name": "Ember.StoreService",
+            "shortname": "StoreService",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember",
+            "namespace": "Ember",
+            "file": "addon/initializers/rdf-store.js",
+            "line": 48,
+            "description": "Ember service that communicates with a Forking-store to query and send data from/to a Solid pod",
+            "itemtype": "property",
+            "type": "ForkingStore"
+        },
+        "Ember.SemanticModel": {
+            "name": "Ember.SemanticModel",
+            "shortname": "SemanticModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember",
+            "namespace": "Ember",
+            "file": "addon/models/semantic-model.js",
+            "line": 443,
+            "description": "Model class that represents entities (resources)",
+            "itemtype": "property",
+            "type": "String"
+        },
+        "Ember.AuthService": {
+            "name": "Ember.AuthService",
+            "shortname": "AuthService",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember",
+            "namespace": "Ember",
+            "file": "addon/services/solid-auth.js",
+            "line": 28,
+            "description": "Ember service used to log-in with solid and fetch profile-info and type-indexes",
+            "itemtype": "property",
+            "type": "Session"
+        },
+        "Ember.ForkingStore": {
+            "name": "Ember.ForkingStore",
+            "shortname": "ForkingStore",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember",
+            "namespace": "Ember",
+            "file": "addon/utils/forking-store.js",
+            "line": 76,
+            "description": "Triple store which models a local store in which the changes are present with each updating queries.\nThe local store holds all the changes locally. The changes are only persisted to the online store on demand to reduce\nthe amount of traffic.",
+            "itemtype": "property",
+            "type": "NamedNode"
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "addon/adapters/data-adapter.js",
+            "line": 53,
+            "description": "The container of the application being debugged.\nThis property will be injected\non creation.",
+            "itemtype": "property",
+            "name": "container",
+            "default": "null",
+            "since": "1.3.0",
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/adapters/data-adapter.js",
+            "line": 81,
+            "description": "Fetches all models defined in the application.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "getModelTypes",
+            "return": {
+                "description": "Array of model types",
+                "type": "Array"
+            },
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/adapters/data-adapter.js",
+            "line": 131,
+            "description": "Get the columns for a given model type.",
+            "access": "public",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "columnsForType",
+            "return": {
+                "description": "An array of columns of the following format:\n name: {String} The name of the column.\n desc: {String} Humanized description (what would show in a table column name).",
+                "type": "Array"
+            },
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/data-adapter.js",
+            "line": 55,
+            "description": "The container of the application being debugged.\nThis property will be injected\non creation.",
+            "itemtype": "property",
+            "name": "container",
+            "default": "null",
+            "since": "1.3.0",
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/data-adapter.js",
+            "line": 83,
+            "description": "Fetches all models defined in the application.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "getModelTypes",
+            "return": {
+                "description": "Array of model types",
+                "type": "Array"
+            },
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/data-adapter.js",
+            "line": 133,
+            "description": "Get the columns for a given model type.",
+            "access": "public",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "columnsForType",
+            "return": {
+                "description": "An array of columns of the following format:\n name: {String} The name of the column.\n desc: {String} Humanized description (what would show in a table column name).",
+                "type": "Array"
+            },
+            "class": "Ember.DataAdapter",
+            "module": "ember",
+            "submodule": "ember-extension-support",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 10,
+            "description": "Looks up a model-class",
+            "params": [
+                {
+                    "name": "owner",
+                    "description": "The ember owner"
+                },
+                {
+                    "name": "model",
+                    "description": "Name of the model to lookup",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 21,
+            "description": "Queries a typeGraph in a local Forkingstore for a type",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The type to search",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "store",
+                    "description": "The store to query",
+                    "type": "ForkingStore"
+                },
+                {
+                    "name": "typeGraph",
+                    "description": "The type-graph",
+                    "type": "NamedNode"
+                }
+            ],
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 116,
+            "description": "Creates an instance of a model with a specific uri and saves it in the cache",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "Model to create an instance of",
+                    "type": "String"
+                },
+                {
+                    "name": "uri",
+                    "description": "Uri of the resource",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "itemtype": "method",
+            "name": "",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 151,
+            "description": "Returns the cache for a specific model",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "The given model",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 163,
+            "description": "Search the cache for an instance of a model",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "The model",
+                    "type": "String"
+                },
+                {
+                    "name": "uri",
+                    "description": "The uri of the instance",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 192,
+            "description": "Returns all instances of a model (type)",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "The given model",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "options",
+                    "type": "Object"
+                }
+            ],
+            "itemtype": "method",
+            "name": "",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 221,
+            "description": "Fetches the graph for a specific model (type)",
+            "params": [
+                {
+                    "name": "model",
+                    "description": "The given model",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 246,
+            "description": "Returns the graph of a model (type)",
+            "params": [
+                {
+                    "name": "constructor",
+                    "description": "Constructor of a model"
+                }
+            ],
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 289,
+            "description": "Set whether a type needs to be autosaved or not",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The type to check",
+                    "type": "String"
+                },
+                {
+                    "name": "autosave",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "itemtype": "method",
+            "name": "setAutosaveForType",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/initializers/rdf-store.js",
+            "line": 301,
+            "description": "Check if a resource type needs to be autosaved",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The type to check",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "getAutosaveForType",
+            "class": "Ember.StoreService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 16,
+            "description": "returns the key for an attribute",
+            "params": [
+                {
+                    "name": "attr",
+                    "description": "The attribute",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 25,
+            "description": "Returns the graph linked to a type",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The given type",
+                    "type": "String"
+                },
+                {
+                    "name": "store",
+                    "description": "The rdf-store to used for querying triples",
+                    "type": "StoreService"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 36,
+            "description": "Returns the graph where the given entity and property can be found",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The entity to find the graph for",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "The property name",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 59,
+            "description": "Updates an entity in the rdf-store",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The entity to update",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "del",
+                    "description": "The triples that need to be deleted",
+                    "type": "[]"
+                },
+                {
+                    "name": "ins",
+                    "description": "The triples that need to be inserted",
+                    "type": "[]"
+                },
+                {
+                    "name": "options",
+                    "description": "Entity options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 93,
+            "description": "Returns the object value for a property of an entity",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 170,
+            "description": "Updates the object-value for a property of an entity",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The entity to update",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "The property for which the value needs to be updated",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 183,
+            "description": "Return the predicate-uri of a property",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 204,
+            "description": "Defines the setter and getter methods of a property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 365,
+            "description": "Creates a string property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 376,
+            "description": "Creates an integer property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 387,
+            "description": "Creates a boolean property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 398,
+            "description": "Creates a datetime property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 409,
+            "description": "Creates a term property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 420,
+            "description": "Creates a hasMany property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 432,
+            "description": "Creates a belongs-to property",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/models/semantic-model.js",
+            "line": 547,
+            "description": "Checks if a given resource exists in the local store",
+            "params": [
+                {
+                    "name": "entity",
+                    "description": "The given resource",
+                    "type": "SemanticModel"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object"
+                }
+            ],
+            "class": "Ember.SemanticModel",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/services/solid-auth.js",
+            "line": 105,
+            "description": "Logs in to a solid-pod with a given provider",
+            "params": [
+                {
+                    "name": "identityProvider",
+                    "description": "The solid-provider to login with",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "ensureLogin",
+            "class": "Ember.AuthService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/services/solid-auth.js",
+            "line": 151,
+            "description": "Fetches profile-info and the private- and public type indexes",
+            "itemtype": "method",
+            "name": "ensureTypeIndex",
+            "class": "Ember.AuthService",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 6,
+            "description": "Yields the graph variant which contains triples to be added",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "NamedNode of the base graph from which a new `addition` graph will be derived.",
+                    "type": "NamedNode"
+                }
+            ],
+            "return": {
+                "description": "NamedNode graph containing the triples to be added to the base graph.",
+                "type": "NamedNode"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 18,
+            "description": "Yields the graph variant which contains removals.",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "NamedNode of the base graph from which a new `removal` graph will be derived.",
+                    "type": "NamedNode"
+                }
+            ],
+            "return": {
+                "description": "NamedNode graph containing the triples to be removed from the base graph.",
+                "type": "NamedNode"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 30,
+            "description": "Yields the graph variant which contains the merging of the `addition` and `removal` graphs.",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "NamedNode of the base graph for which the different variants will be merged.",
+                    "type": "NamedNode"
+                }
+            ],
+            "return": {
+                "description": "NamedNode graph containing the merged graph of the other variants of the base graph.",
+                "type": "NamedNode"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 42,
+            "description": "Yields the `Statement` which is composed from the given `triple` and `graph`",
+            "params": [
+                {
+                    "name": "triple",
+                    "description": "an RDF triple",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "subject",
+                            "description": "NamedNode of the subject",
+                            "type": "NamedNode"
+                        },
+                        {
+                            "name": "predicate",
+                            "description": "NamedNode of the predicate",
+                            "type": "NamedNode"
+                        },
+                        {
+                            "name": "object",
+                            "description": "NamedNode of the object",
+                            "type": "NamedNode"
+                        }
+                    ]
+                },
+                {
+                    "name": "graph",
+                    "description": "the graph from which a statement will be created",
+                    "type": "NamedNode"
+                }
+            ],
+            "return": {
+                "description": "statement containing the `triple` in the `graph`",
+                "type": "Statement"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 55,
+            "description": "Informs the observers of the forking store about the `payload` being sent to the\nonline store.",
+            "params": [
+                {
+                    "name": "payload",
+                    "description": "payload which is to be synchronized with the online store",
+                    "type": "Object"
+                },
+                {
+                    "name": "forkingStore",
+                    "description": "the forking store",
+                    "type": "ForkingStore"
+                }
+            ],
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 100,
+            "description": "Load data from an external graph.",
+            "params": [
+                {
+                    "name": "source",
+                    "description": "the online source from which the triples will be loaded into local store.",
+                    "type": "NamedNode"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 110,
+            "description": "Loads the data, additions and deletions into the given graph store.",
+            "params": [
+                {
+                    "name": "content",
+                    "description": "input content to be parsed",
+                    "type": "String"
+                },
+                {
+                    "name": "graph",
+                    "description": "the graph store to be used",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "additions",
+                    "description": "the additions input to be parsed",
+                    "type": "String"
+                },
+                {
+                    "name": "removals",
+                    "description": "the removals input to be parsed",
+                    "type": "String"
+                },
+                {
+                    "name": "format",
+                    "description": "the MIME content type string for the input - defaults to text/turtle",
+                    "type": "String"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 131,
+            "description": "Serializes the triples in the graph into string using the given format",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "graph which will be serialized",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "format",
+                    "description": "the MIME content type to be used to serialize the graph",
+                    "type": "String"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "return": {
+                "description": "serialized content of the given graph",
+                "type": "String"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 147,
+            "description": "Serialized the triple in the graph into strin gusing the given format.\nUses the mergedGraph of the given graph.",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "graph which will be serialized",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "format",
+                    "description": "the MIME content type to be used to serialize the graph",
+                    "type": "String"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "return": {
+                "description": "serialized content of the given graph",
+                "type": "String"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 159,
+            "description": "Parses content from a file into a specified graph.",
+            "params": [
+                {
+                    "name": "content",
+                    "description": "input content to be parsed",
+                    "type": "String"
+                },
+                {
+                    "name": "graph",
+                    "description": "the graph store to be used",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "format",
+                    "description": "the MIME content type to be used to parse the content into the graph",
+                    "type": "String"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 171,
+            "description": "Perform a match on the graph.",
+            "params": [
+                {
+                    "name": "subject",
+                    "description": "subject NamedNode to be used in matching",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "predicate",
+                    "description": "predicate NamedNode to be used in matching",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "object",
+                    "description": "object NamedNode to be used in matching",
+                    "type": "NamedNode"
+                },
+                {
+                    "name": "graph",
+                    "description": "graph in which the given triple will be matched in.",
+                    "type": "NamedNode"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 212,
+            "description": "internal to compare triples",
+            "params": [
+                {
+                    "name": "a",
+                    "description": "statement to be compared",
+                    "type": "Statement"
+                },
+                {
+                    "name": "b",
+                    "description": "other statement to be compared to",
+                    "type": "Statement"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "return": {
+                "description": "true if equal else false",
+                "type": "Bool"
+            },
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 227,
+            "description": "Perform any match on the graph.",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 245,
+            "description": "Add all the given statements into the temporary `addition` graph.\nAlso does removal of the statement from the `deletion` graph if it exists there.",
+            "params": [
+                {
+                    "name": "inserts",
+                    "description": "list of statements to be added to the `addition` graph based on the graph of the statement",
+                    "type": "List<Statement>"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 264,
+            "description": "Remove the given statements from the `addition` graph and add them to the `deletion` graph.",
+            "params": [
+                {
+                    "name": "deletes",
+                    "description": "list of statemetns to be added to the `deletion` graph based on the graph of the statement",
+                    "type": "List<Statement>"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 281,
+            "description": "All instances of the triple to be removed from the graph",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 292,
+            "description": "Returns a set of existing graphs in the local store.",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 301,
+            "description": "Returns a list of graph for which there has been changes.",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 329,
+            "description": "Merges the `addition` and `deletion` graphs into the base graph.",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "the graph to be merged with its `addition` and `deletion` graphs",
+                    "type": "NamedNode"
+                }
+            ],
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 366,
+            "description": "Persists the triples in the local store of the given grpah to the online store.",
+            "params": [
+                {
+                    "name": "graph",
+                    "description": "the graph for which the changes will be pushed to the online store",
+                    "type": "NamedNode"
+                }
+            ],
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 390,
+            "description": "Persists the changes to the online store",
+            "memberof": "{ForkingStore}",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 404,
+            "description": "Promise based version of update protocol",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/forking-store.js",
+            "line": 417,
+            "description": "Registers an observer, optionally with a key.  The observer will\nbe called with objects of the shape { deletes, inserts } for any\nchange that is passed through `this.update`.",
+            "class": "Ember.ForkingStore",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/namespaces.js",
+            "line": 32,
+            "description": "Converts a thing into a namespace.\n\nUnderstands various helpers:\n- Namespace stays a namespace\n- \"foo:\" is converted into \"foo\" and it's searched in the known namespaces.\n- \"foo\" is searched in the known namespaces.\n- other strings are converted into a namespace\n\nIf nothing is found, undefined is returned.",
+            "class": "",
+            "module": "ember",
+            "namespace": "Ember"
+        },
+        {
+            "file": "addon/utils/namespaces.js",
+            "line": 53,
+            "description": "Converts a thing into a NamedNode.\n\nUnderstands namespaces, strings, and NamedNode instances.",
+            "class": "",
+            "module": "ember",
+            "namespace": "Ember"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:6"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:18"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:30"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:42"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:100"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:110"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:131"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:131"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:147"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:147"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:159"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:171"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:212"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/forking-store.js:212"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:245"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:264"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:366"
+        },
+        {
+            "message": "unknown tag: memberof",
+            "line": " addon/utils/forking-store.js:390"
+        },
+        {
+            "message": "Missing item type\nLooks up a model-class",
+            "line": " addon/initializers/rdf-store.js:10"
+        },
+        {
+            "message": "Missing item type\nQueries a typeGraph in a local Forkingstore for a type",
+            "line": " addon/initializers/rdf-store.js:21"
+        },
+        {
+            "message": "Missing item type\nReturns the graph of a model (type)",
+            "line": " addon/initializers/rdf-store.js:246"
+        },
+        {
+            "message": "Missing item type\nreturns the key for an attribute",
+            "line": " addon/models/semantic-model.js:16"
+        },
+        {
+            "message": "Missing item type\nReturns the graph linked to a type",
+            "line": " addon/models/semantic-model.js:25"
+        },
+        {
+            "message": "Missing item type\nReturns the graph where the given entity and property can be found",
+            "line": " addon/models/semantic-model.js:36"
+        },
+        {
+            "message": "Missing item type\nUpdates an entity in the rdf-store",
+            "line": " addon/models/semantic-model.js:59"
+        },
+        {
+            "message": "Missing item type\nReturns the object value for a property of an entity",
+            "line": " addon/models/semantic-model.js:93"
+        },
+        {
+            "message": "Missing item type\nUpdates the object-value for a property of an entity",
+            "line": " addon/models/semantic-model.js:170"
+        },
+        {
+            "message": "Missing item type\nReturn the predicate-uri of a property",
+            "line": " addon/models/semantic-model.js:183"
+        },
+        {
+            "message": "Missing item type\nDefines the setter and getter methods of a property",
+            "line": " addon/models/semantic-model.js:204"
+        },
+        {
+            "message": "Missing item type\nCreates a string property",
+            "line": " addon/models/semantic-model.js:365"
+        },
+        {
+            "message": "Missing item type\nCreates an integer property",
+            "line": " addon/models/semantic-model.js:376"
+        },
+        {
+            "message": "Missing item type\nCreates a boolean property",
+            "line": " addon/models/semantic-model.js:387"
+        },
+        {
+            "message": "Missing item type\nCreates a datetime property",
+            "line": " addon/models/semantic-model.js:398"
+        },
+        {
+            "message": "Missing item type\nCreates a term property",
+            "line": " addon/models/semantic-model.js:409"
+        },
+        {
+            "message": "Missing item type\nCreates a hasMany property",
+            "line": " addon/models/semantic-model.js:420"
+        },
+        {
+            "message": "Missing item type\nCreates a belongs-to property",
+            "line": " addon/models/semantic-model.js:432"
+        },
+        {
+            "message": "Missing item type\nChecks if a given resource exists in the local store",
+            "line": " addon/models/semantic-model.js:547"
+        },
+        {
+            "message": "Missing item type\nYields the graph variant which contains triples to be added",
+            "line": " addon/utils/forking-store.js:6"
+        },
+        {
+            "message": "Missing item type\nYields the graph variant which contains removals.",
+            "line": " addon/utils/forking-store.js:18"
+        },
+        {
+            "message": "Missing item type\nYields the graph variant which contains the merging of the `addition` and `removal` graphs.",
+            "line": " addon/utils/forking-store.js:30"
+        },
+        {
+            "message": "Missing item type\nYields the `Statement` which is composed from the given `triple` and `graph`",
+            "line": " addon/utils/forking-store.js:42"
+        },
+        {
+            "message": "Missing item type\nInforms the observers of the forking store about the `payload` being sent to the\nonline store.",
+            "line": " addon/utils/forking-store.js:55"
+        },
+        {
+            "message": "Missing item type\nLoad data from an external graph.",
+            "line": " addon/utils/forking-store.js:100"
+        },
+        {
+            "message": "Missing item type\nLoads the data, additions and deletions into the given graph store.",
+            "line": " addon/utils/forking-store.js:110"
+        },
+        {
+            "message": "Missing item type\nSerializes the triples in the graph into string using the given format",
+            "line": " addon/utils/forking-store.js:131"
+        },
+        {
+            "message": "Missing item type\nSerialized the triple in the graph into strin gusing the given format.\nUses the mergedGraph of the given graph.",
+            "line": " addon/utils/forking-store.js:147"
+        },
+        {
+            "message": "Missing item type\nParses content from a file into a specified graph.",
+            "line": " addon/utils/forking-store.js:159"
+        },
+        {
+            "message": "Missing item type\nPerform a match on the graph.",
+            "line": " addon/utils/forking-store.js:171"
+        },
+        {
+            "message": "Missing item type\ninternal to compare triples",
+            "line": " addon/utils/forking-store.js:212"
+        },
+        {
+            "message": "Missing item type\nPerform any match on the graph.",
+            "line": " addon/utils/forking-store.js:227"
+        },
+        {
+            "message": "Missing item type\nAdd all the given statements into the temporary `addition` graph.\nAlso does removal of the statement from the `deletion` graph if it exists there.",
+            "line": " addon/utils/forking-store.js:245"
+        },
+        {
+            "message": "Missing item type\nRemove the given statements from the `addition` graph and add them to the `deletion` graph.",
+            "line": " addon/utils/forking-store.js:264"
+        },
+        {
+            "message": "Missing item type\nAll instances of the triple to be removed from the graph",
+            "line": " addon/utils/forking-store.js:281"
+        },
+        {
+            "message": "Missing item type\nReturns a set of existing graphs in the local store.",
+            "line": " addon/utils/forking-store.js:292"
+        },
+        {
+            "message": "Missing item type\nReturns a list of graph for which there has been changes.",
+            "line": " addon/utils/forking-store.js:301"
+        },
+        {
+            "message": "Missing item type\nMerges the `addition` and `deletion` graphs into the base graph.",
+            "line": " addon/utils/forking-store.js:329"
+        },
+        {
+            "message": "Missing item type\nPersists the triples in the local store of the given grpah to the online store.",
+            "line": " addon/utils/forking-store.js:366"
+        },
+        {
+            "message": "Missing item type\nPersists the changes to the online store",
+            "line": " addon/utils/forking-store.js:390"
+        },
+        {
+            "message": "Missing item type\nPromise based version of update protocol",
+            "line": " addon/utils/forking-store.js:404"
+        },
+        {
+            "message": "Missing item type\nRegisters an observer, optionally with a key.  The observer will\nbe called with objects of the shape { deletes, inserts } for any\nchange that is passed through `this.update`.",
+            "line": " addon/utils/forking-store.js:417"
+        },
+        {
+            "message": "Missing item type\nConverts a thing into a namespace.\n\nUnderstands various helpers:\n- Namespace stays a namespace\n- \"foo:\" is converted into \"foo\" and it's searched in the known namespaces.\n- \"foo\" is searched in the known namespaces.\n- other strings are converted into a namespace\n\nIf nothing is found, undefined is returned.",
+            "line": " addon/utils/namespaces.js:32"
+        },
+        {
+            "message": "Missing item type\nConverts a thing into a NamedNode.\n\nUnderstands namespaces, strings, and NamedNode instances.",
+            "line": " addon/utils/namespaces.js:53"
+        }
+    ]
+}
